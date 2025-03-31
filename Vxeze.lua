@@ -1,33 +1,13 @@
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
-
--- Yêu cầu nhập Key nếu chưa có
-if not getgenv().Key or getgenv().Key == "" then
-    game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập key!")
+local http_request = (syn and syn.request) or (http and http.request) or request
+if not http_request then
+    print("❌ Không tìm thấy hàm request, script không thể chạy!")
     return
 end
 
-local keysURL = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
-local keyValid = false
+local HttpService = game:GetService("HttpService")
 
-local success, response = pcall(function()
-    return game:HttpGet(keysURL)
-end)
-
-if success and response then
-    local HttpService = game:GetService("HttpService")
-    local keysData = HttpService:JSONDecode(response)
-    for k, v in pairs(keysData) do
-        if k == getgenv().Key and v > os.time() * 1000 then  
-            keyValid = true
-            break
-        end
-    end
-end
-
-if not keyValid then
-    game.Players.LocalPlayer:Kick("❌ Key không hợp lệ hoặc đã hết hạn!")
-    return
-end
+local key_github_url = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local api_url = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev"
 
 local gameScripts = {
     [2753915549] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2",
@@ -36,11 +16,83 @@ local gameScripts = {
     [116495829188952] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"
 }
 
+-- 📌 Lấy HWID từ hệ thống
+local hwid = gethwid and gethwid() or "Unknown"
+
+-- 📡 Hàm gửi request HTTP
+local function send_request(url)
+    local response = http_request({ Url = url, Method = "GET" })
+    return response and response.Body or "❌ Không nhận được phản hồi từ server!"
+end
+
+-- ✅ Kiểm tra Key trên GitHub
+local function check_key_github(key)
+    local key_data = send_request(key_github_url)
+    local success, key_json = pcall(HttpService.JSONDecode, HttpService, key_data)
+
+    if success and key_json and key_json[key] then
+        return true, "✅ Key hợp lệ!"
+    else
+        return false, "❌ Key không hợp lệ!"
+    end
+end
+
+-- 🔍 Kiểm tra HWID qua API
+local function check_hwid()
+    local check_url = api_url .. "/Checkhwid?hwid=" .. hwid
+    local check_response = send_request(check_url)
+
+    local success, check_data = pcall(HttpService.JSONDecode, HttpService, check_response)
+    if success and check_data and check_data.HWID_Status then
+        return check_data.HWID_Status, check_data.message
+    else
+        return false, "❌ Lỗi khi kiểm tra HWID!"
+    end
+end
+
+-- ➕ Thêm HWID qua API nếu chưa có
+local function add_hwid()
+    local add_url = api_url .. "/Addhwid?hwid=" .. hwid .. "&user=pre"
+    local add_response = send_request(add_url)
+
+    local success, add_data = pcall(HttpService.JSONDecode, HttpService, add_response)
+    if success and add_data and add_data.status == "true" then
+        return true, "✅ HWID đã được thêm vào hệ thống!"
+    else
+        return false, "❌ Lỗi khi thêm HWID!"
+    end
+end
+
+-- 🔑 Nhập Key
+print("🔑 Nhập Key của bạn:")
+local user_key = io.read()
+
+-- 1️⃣ **Kiểm tra Key trên GitHub trước**
+local key_valid, key_msg = check_key_github(user_key)
+if not key_valid then
+    print(key_msg)
+    return
+end
+
+print(key_msg)  -- Key hợp lệ
+
+-- 2️⃣ **Kiểm tra HWID**
+local hwid_valid, hwid_msg = check_hwid()
+if hwid_valid then
+    print("✅ HWID hợp lệ, có thể sử dụng script!")
+else
+    print("⚠️ HWID chưa hợp lệ, đang thêm vào hệ thống...")
+    local add_success, add_msg = add_hwid()
+    print(add_msg)
+    if not add_success then return end
+end
+
+-- 3️⃣ **Chạy script theo Game ID**
 if gameScripts[game.PlaceId] then
     if game.PlaceId ~= 116495829188952 then
         getgenv().Language = "English"
     end
     loadstring(game:HttpGet(gameScripts[game.PlaceId]))()
 else
-    game.Players.LocalPlayer:Kick("⚠️Not Support !")
+    game.Players.LocalPlayer:Kick("⚠️ Not Support!")
 end
