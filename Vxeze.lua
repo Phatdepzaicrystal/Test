@@ -16,16 +16,13 @@ local gameScripts = {
     [116495829188952] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Npclockdeadrails"
 }
 
--- 📌 Lấy HWID từ hệ thống
 local hwid = gethwid and gethwid() or "Unknown"
 
--- 📡 Hàm gửi request HTTP
 local function send_request(url)
     local response = http_request({ Url = url, Method = "GET" })
     return response and response.Body or "❌ Không nhận được phản hồi từ server!"
 end
 
--- ✅ Kiểm tra Key trên GitHub
 local function check_key_github(key)
     local key_data = send_request(key_github_url)
     local success, key_json = pcall(HttpService.JSONDecode, HttpService, key_data)
@@ -37,7 +34,6 @@ local function check_key_github(key)
     end
 end
 
--- 🔍 Kiểm tra HWID qua API
 local function check_hwid()
     local check_url = api_url .. "/Checkhwid?hwid=" .. hwid
     local check_response = send_request(check_url)
@@ -50,7 +46,6 @@ local function check_hwid()
     end
 end
 
--- ➕ Thêm HWID qua API nếu chưa có
 local function add_hwid()
     local add_url = api_url .. "/Addhwid?hwid=" .. hwid .. "&user=pre"
     local add_response = send_request(add_url)
@@ -63,11 +58,9 @@ local function add_hwid()
     end
 end
 
--- 🔑 Nhập Key
 print("🔑 Nhập Key của bạn:")
 local user_key = io.read()
 
--- 1️⃣ **Kiểm tra Key trên GitHub trước**
 local key_valid, key_msg = check_key_github(user_key)
 if not key_valid then
     print(key_msg)
@@ -76,7 +69,6 @@ end
 
 print(key_msg)  -- Key hợp lệ
 
--- 2️⃣ **Kiểm tra HWID**
 local hwid_valid, hwid_msg = check_hwid()
 if hwid_valid then
     print("✅ HWID hợp lệ, có thể sử dụng script!")
@@ -87,7 +79,6 @@ else
     if not add_success then return end
 end
 
--- 3️⃣ **Chạy script theo Game ID**
 if gameScripts[game.PlaceId] then
     if game.PlaceId ~= 116495829188952 then
         getgenv().Language = "English"
