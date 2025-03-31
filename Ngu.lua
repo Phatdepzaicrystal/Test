@@ -1,7 +1,7 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 if not getgenv().Key or getgenv().Key == "" then
-    game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập Key!")
+    game.Players.LocalPlayer:Kick("⚠️ You must enter key!!")
     return
 end
 
@@ -30,21 +30,21 @@ pcall(function()
 end)
 
 if not keys then
-    warn("❌ Lỗi khi đọc JSON từ GitHub!")
+    warn("❌ Error JSON")
     return
 end
 
 local currentTime = os.time()
 
 if not keys[getgenv().Key] then
-    game.Players.LocalPlayer:Kick("❌ Key không hợp lệ!")
+    game.Players.LocalPlayer:Kick("❌ Invaild Key!")
     return
 end
 
 local keyExpiry = keys[getgenv().Key]
 
 if keyExpiry ~= "lifetime" and currentTime > keyExpiry then
-    game.Players.LocalPlayer:Kick("❌ Key của bạn đã hết hạn!")
+    game.Players.LocalPlayer:Kick("❌ Invaild Key!")
     return
 end
 
@@ -53,7 +53,7 @@ local hwidSuccess, hwidResponse = pcall(function()
 end)
 
 if not hwidSuccess or not hwidResponse then
-    warn("❌ Lỗi khi kiểm tra HWID từ API!")
+    warn("❌ Error Check Hwid.Plz Wait Admin Fix!!")
     return
 end
 
@@ -63,25 +63,32 @@ pcall(function()
 end)
 
 if not hwidStatus then
-    warn("❌ Lỗi khi đọc JSON từ API HWID!")
+    warn("❌ Error JSON")
     return
 end
 
 if not hwidStatus.HWID_Status then
-    warn("ℹ️ HWID chưa tồn tại, đang thêm vào API...")
+    warn("ℹ️ Saved Hwid")
 
     local addSuccess, addResponse = pcall(function()
         return game:HttpGet(hwidAddUrl)
     end)
 
     if not addSuccess or not addResponse then
-        warn("❌ Lỗi khi thêm HWID vào API!")
+        warn("❌Error!")
         return
     end
 
-    warn("✅ HWID của bạn đã được thêm thành công! Tiếp tục chạy script...")
+    warn("✅Running Script:Zzz")
+else
+    -- Nếu HWID tồn tại nhưng Key không khớp, kick ngay lập tức
+    if hwidStatus.status == "false" then
+        game.Players.LocalPlayer:Kick("❌ Invaild Hwid!")
+        return
+    end
 end
 
+-- Tự động chạy script theo game
 local gameScripts = {
     [2753915549] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
     [4442272183] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
