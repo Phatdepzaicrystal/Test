@@ -34,7 +34,15 @@ if not keys then
     return
 end
 
-local keyInfo = keys[getgenv().Key]
+-- Tìm kiếm Key khớp trong file JSON
+local keyInfo
+for hwidKey, data in pairs(keys) do
+    if data.Key == getgenv().Key then
+        keyInfo = data
+        break
+    end
+end
+
 if not keyInfo then
     game.Players.LocalPlayer:Kick("❌ Invalid Key!")
     return
@@ -84,7 +92,8 @@ elseif hwidStatus.status == "false" and hwidStatus.message == "Invalid HWID." th
 
     local hwidAddData = HttpService:JSONEncode({
         hwid = hwid,
-        key = getgenv().Key
+        key = getgenv().Key,
+        user = "free"
     })
 
     local addSuccess, addResponse = pcall(function()
