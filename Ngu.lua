@@ -34,13 +34,19 @@ if not keys then
     return
 end
 
-if not keys[getgenv().Key] then
+local keyInfo = keys[getgenv().Key]
+if not keyInfo then
     game.Players.LocalPlayer:Kick("❌ Invalid Key!")
     return
 end
 
-local keyExpiry = keys[getgenv().Key]
-if keyExpiry ~= "lifetime" and currentTime > keyExpiry then
+if keyInfo.Blacklist then
+    game.Players.LocalPlayer:Kick("❌ Key của bạn đã bị blacklist!")
+    return
+end
+
+local expiryTime = keyInfo.Time + keyInfo.Duration
+if currentTime > expiryTime then
     game.Players.LocalPlayer:Kick("❌ Key has expired!")
     return
 end
@@ -78,8 +84,7 @@ elseif hwidStatus.status == "false" and hwidStatus.message == "Invalid HWID." th
 
     local hwidAddData = HttpService:JSONEncode({
         hwid = hwid,
-        key = getgenv().Key,
-        user = "free"
+        key = getgenv().Key
     })
 
     local addSuccess, addResponse = pcall(function()
