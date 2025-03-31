@@ -1,34 +1,38 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
--- 🛑 Nhập Key ở đây (Nếu không nhập, bị kick)
 if not getgenv().Key or getgenv().Key == "" then
     game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập Key!")
     return
 end
 
--- 🔎 Lấy HWID
 local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
 
--- 🗂️ Link kiểm tra Key trên GitHub
 local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 
--- 🌐 API kiểm tra HWID
 local hwidCheckUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Checkhwid?hwid=" .. hwid
 
--- 🌐 API thêm HWID nếu chưa có
 local hwidAddUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Addhwid?hwid=" .. hwid .. "&user=free"
 
--- 🛠️ Kiểm tra Key hợp lệ từ GitHub
 local success, keyData = pcall(function()
     return game:HttpGet(keyCheckUrl)
 end)
 
 if not success or not keyData then
-    game.Players.LocalPlayer:Kick("❌ Không thể kết nối đến server kiểm tra Key!")
+    warn("❌ Lỗi khi tải Key từ GitHub!")
     return
 end
 
-local keys = game:GetService("HttpService"):JSONDecode(keyData)
+local keys
+local httpService = game:GetService("HttpService")
+
+pcall(function()
+    keys = httpService:JSONDecode(keyData)
+end)
+
+if not keys then
+    warn("❌ Lỗi khi đọc JSON từ GitHub!")
+    return
+end
 
 -- 🕒 Lấy thời gian hiện tại
 local currentTime = os.time()
@@ -53,16 +57,25 @@ local hwidSuccess, hwidResponse = pcall(function()
 end)
 
 if not hwidSuccess or not hwidResponse then
-    game.Players.LocalPlayer:Kick("❌ Không thể kiểm tra HWID!")
+    warn("❌ Lỗi khi kiểm tra HWID từ API!")
     return
 end
 
-local hwidStatus = game:GetService("HttpService"):JSONDecode(hwidResponse)
+local hwidStatus
+pcall(function()
+    hwidStatus = httpService:JSONDecode(hwidResponse)
+end)
+
+if not hwidStatus then
+    warn("❌ Lỗi khi đọc JSON từ API HWID!")
+    return
+end
 
 if not hwidStatus.HWID_Status then
     -- 📝 Nếu HWID chưa có, thêm vào API
+    warn("ℹ️ HWID chưa tồn tại, đang thêm vào API...")
     game:HttpGet(hwidAddUrl)
-    game.Players.LocalPlayer:Kick("✅ HWID của bạn đã được thêm, vui lòng chạy lại script!")
+    print("✅ HWID của bạn đã được thêm, vui lòng chạy lại script!")
     return
 end
 
