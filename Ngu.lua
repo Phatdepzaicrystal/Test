@@ -69,10 +69,17 @@ end
 
 if not hwidStatus.HWID_Status then
     warn("ℹ️ HWID chưa tồn tại, đang thêm vào API...")
-    game:HttpGet(hwidAddUrl)
 
-    warn("✅ HWID của bạn đã được thêm! Vui lòng chạy lại script.")
-    return
+    local addSuccess, addResponse = pcall(function()
+        return game:HttpGet(hwidAddUrl)
+    end)
+
+    if not addSuccess or not addResponse then
+        warn("❌ Lỗi khi thêm HWID vào API!")
+        return
+    end
+
+    warn("✅ HWID của bạn đã được thêm thành công! Tiếp tục chạy script...")
 end
 
 local gameScripts = {
