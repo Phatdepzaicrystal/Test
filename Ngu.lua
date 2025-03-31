@@ -9,9 +9,9 @@ local hwid = gethwid and gethwid() or "Unknown"
 
 local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 
-local hwidCheckUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Checkhwid?hwid=" .. hwid
+local hwidCheckUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Checkhwid?hwid=" .. hwid
 
-local hwidAddUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Addhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key .. "&user=free"
+local hwidAddUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Addhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key .. "&user=free"
 
 local success, keyData = pcall(function()
     return game:HttpGet(keyCheckUrl)
@@ -68,10 +68,10 @@ if not hwidStatus then
 end
 
 if not hwidStatus.HWID_Status then
-    warn("ℹ️ HWID not found, adding to API...")
+    warn("HWID not found, adding to API...")
     game:HttpGet(hwidAddUrl)
 
-    warn("✅ Your HWID has been added! Please run the script again.")
+    warn("Zzz.Successful")
     return
 end
 
