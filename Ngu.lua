@@ -6,13 +6,15 @@ if not getgenv().Key or getgenv().Key == "" then
 end
 
 local hwid = gethwid and gethwid() or "Unknown"
+local HttpService = game:GetService("HttpService")
+local currentTime = os.time()
 
+-- URL API
 local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local hwidCheckUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Checkhwid"
+local hwidAddUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Addhwid"
 
-local hwidCheckUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Checkhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key
-
-local hwidAddUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Addhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key .. "&user=free"
-
+-- Lấy Key từ GitHub
 local success, keyData = pcall(function()
     return game:HttpGet(keyCheckUrl)
 end)
@@ -23,10 +25,8 @@ if not success or not keyData then
 end
 
 local keys
-local httpService = game:GetService("HttpService")
-
 pcall(function()
-    keys = httpService:JSONDecode(keyData)
+    keys = HttpService:JSONDecode(keyData)
 end)
 
 if not keys then
@@ -34,32 +34,35 @@ if not keys then
     return
 end
 
-local currentTime = os.time()
-
 if not keys[getgenv().Key] then
-    game.Players.LocalPlayer:Kick("❌ Invaild Key!")
+    game.Players.LocalPlayer:Kick("❌ Invalid Key!")
     return
 end
 
 local keyExpiry = keys[getgenv().Key]
-
 if keyExpiry ~= "lifetime" and currentTime > keyExpiry then
-    game.Players.LocalPlayer:Kick("❌ Invaild Key!")
+    game.Players.LocalPlayer:Kick("❌ Key has expired!")
     return
 end
 
+-- Kiểm tra HWID
+local hwidCheckData = HttpService:JSONEncode({
+    hwid = hwid,
+    key = getgenv().Key
+})
+
 local hwidSuccess, hwidResponse = pcall(function()
-    return game:HttpGet(hwidCheckUrl)
+    return game:HttpPost(hwidCheckUrl, hwidCheckData, Enum.HttpContentType.ApplicationJson)
 end)
 
 if not hwidSuccess or not hwidResponse then
-    warn("❌ Error Check Hwid.Plz Wait Admin Fix!!")
+    warn("❌ Error checking HWID. Please wait for admin to fix!")
     return
 end
 
 local hwidStatus
 pcall(function()
-    hwidStatus = httpService:JSONDecode(hwidResponse)
+    hwidStatus = HttpService:JSONDecode(hwidResponse)
 end)
 
 if not hwidStatus then
@@ -70,20 +73,25 @@ end
 if not hwidStatus.HWID_Status then
     warn("ℹ️ Saved Hwid")
 
+    local hwidAddData = HttpService:JSONEncode({
+        hwid = hwid,
+        key = getgenv().Key,
+        user = "free"
+    })
+
     local addSuccess, addResponse = pcall(function()
-        return game:HttpGet(hwidAddUrl)
+        return game:HttpPost(hwidAddUrl, hwidAddData, Enum.HttpContentType.ApplicationJson)
     end)
 
     if not addSuccess or not addResponse then
-        warn("❌Error!")
+        warn("❌ Error while adding HWID!")
         return
     end
 
-    warn("✅Running Script:Zzz")
+    warn("✅ Running Script: Zzz")
 else
-    -- Nếu HWID tồn tại nhưng Key không khớp, kick ngay lập tức
     if hwidStatus.status == "false" then
-        game.Players.LocalPlayer:Kick("❌ Invaild Hwid!")
+        game.Players.LocalPlayer:Kick("❌ Invalid HWID!")
         return
     end
 end
