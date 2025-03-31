@@ -1,25 +1,22 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
-local httpService = game:GetService("HttpService")
-local player = game.Players.LocalPlayer
-
--- Kiểm tra nếu chưa nhập Key
+-- Nhập Key nếu chưa có
 if not getgenv().Key or getgenv().Key == "" then
-    player:Kick("⚠️ Bạn chưa nhập Key!")
+    game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập Key!")
     return
 end
 
--- Lấy HWID (cần một phương thức hợp lệ để lấy HWID)
+-- Lấy HWID của thiết bị
 local hwid = gethwid and gethwid() or "Unknown"
 
--- Đường dẫn API
-local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
-local hwidCheckUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Checkhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key
-local hwidAddUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Addhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key
+-- Định nghĩa URL API
+local githubKeyUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
+local checkHwidUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Checkhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key
+local addHwidUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Addhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key .. "&user=free"
 
--- Kiểm tra Key trên GitHub
+-- Kiểm tra Key từ GitHub
 local success, keyData = pcall(function()
-    return game:HttpGet(keyCheckUrl)
+    return game:HttpGet(githubKeyUrl)
 end)
 
 if not success or not keyData then
@@ -28,6 +25,8 @@ if not success or not keyData then
 end
 
 local keys
+local httpService = game:GetService("HttpService")
+
 pcall(function()
     keys = httpService:JSONDecode(keyData)
 end)
@@ -40,24 +39,24 @@ end
 local currentTime = os.time()
 
 if not keys[getgenv().Key] then
-    player:Kick("❌ Invalid Key!")
+    game.Players.LocalPlayer:Kick("❌ Invalid Key!")
     return
 end
 
 local keyExpiry = keys[getgenv().Key]
 
 if keyExpiry ~= "lifetime" and currentTime > keyExpiry then
-    player:Kick("❌ Key của bạn đã hết hạn!")
+    game.Players.LocalPlayer:Kick("❌ Key của bạn đã hết hạn!")
     return
 end
 
--- Kiểm tra HWID trên API
+-- Kiểm tra HWID + Key trên API
 local hwidSuccess, hwidResponse = pcall(function()
-    return game:HttpGet(hwidCheckUrl)
+    return game:HttpGet(checkHwidUrl)
 end)
 
 if not hwidSuccess or not hwidResponse then
-    warn("❌ Lỗi khi kiểm tra HWID!")
+    warn("❌ Error 404!")
     return
 end
 
@@ -67,18 +66,19 @@ pcall(function()
 end)
 
 if not hwidStatus then
-    warn("❌ Lỗi khi đọc JSON từ API!")
+    warn("❌ Error JSON ")
     return
 end
 
 if not hwidStatus.HWID_Status then
-    warn("ℹ️ Thêm HWID...")
-    game:HttpGet(hwidAddUrl)
+    warn("ℹ️ Thêm HWID vào API...")
+    game:HttpGet(addHwidUrl)
+
     warn("✅ HWID đã được thêm thành công!")
     return
 end
 
--- Danh sách game hỗ trợ
+-- Chạy script theo Game ID nếu hợp lệ
 local gameScripts = {
     [2753915549] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
     [4442272183] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
@@ -86,12 +86,11 @@ local gameScripts = {
     [116495829188952] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/Npclockdeadrails"
 }
 
--- Chạy script nếu game được hỗ trợ
 if gameScripts[game.PlaceId] then
     if game.PlaceId ~= 116495829188952 then
         getgenv().Language = "English"
     end
     loadstring(game:HttpGet(gameScripts[game.PlaceId]))()
 else
-    player:Kick("⚠️ Not Support!")
+    game.Players.LocalPlayer:Kick("⚠️ Not Support!")
 end
