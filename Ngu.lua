@@ -1,7 +1,7 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 local http = game:GetService("HttpService")
-local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+local hwid = gethwid and gethwid() or "Unknown"
 local key = getgenv().Key or nil
 
 if not key or key == "" then
