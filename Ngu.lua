@@ -70,8 +70,11 @@ if not hwidStatus then
     return
 end
 
-if not hwidStatus.HWID_Status then
-    warn("ℹ️ Saved Hwid")
+-- Kiểm tra trạng thái HWID từ API phản hồi
+if hwidStatus.status == "true" then
+    warn("✅ HWID hợp lệ, tiếp tục chạy script...")
+elseif hwidStatus.status == "false" and hwidStatus.message == "Invalid HWID." then
+    warn("ℹ️ HWID chưa được lưu, tiến hành thêm mới...")
 
     local hwidAddData = HttpService:JSONEncode({
         hwid = hwid,
@@ -83,17 +86,15 @@ if not hwidStatus.HWID_Status then
         return game:HttpPost(hwidAddUrl, hwidAddData, Enum.HttpContentType.ApplicationJson)
     end)
 
-    if not addSuccess or not addResponse then
-        warn("❌ Error while adding HWID!")
+    if addSuccess and addResponse then
+        warn("✅ HWID mới đã được thêm thành công!")
+    else
+        warn("❌ Lỗi khi thêm HWID mới!")
         return
     end
-
-    warn("✅ Running Script: Zzz")
 else
-    if hwidStatus.status == "false" then
-        game.Players.LocalPlayer:Kick("❌ Invalid HWID!")
-        return
-    end
+    game.Players.LocalPlayer:Kick("❌ Invalid HWID: " .. (hwidStatus.message or "Unknown error"))
+    return
 end
 
 -- Tự động chạy script theo game
