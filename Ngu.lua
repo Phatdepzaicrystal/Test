@@ -1,19 +1,20 @@
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
-
 local HttpService = game:GetService("HttpService")
 
+-- Lấy HWID từ gethwid (giả sử bạn đã có hàm này để lấy HWID)
+local hwid = gethwid and gethwid() or "Unknown"
+
+-- Kiểm tra nếu Key chưa được thiết lập
 if not getgenv().Key or getgenv().Key == "" then
     game.Players.LocalPlayer:Kick("⚠️ Bạn chưa nhập Key!")
     return
 end
 
-local hwid = gethwid and gethwid() or "Unknown"
-
+-- URL kiểm tra Key và HWID
 local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
 local hwidCheckUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Checkhwid?hwid=" .. HttpService:UrlEncode(hwid) .. "&key=" .. HttpService:UrlEncode(getgenv().Key)
 local hwidAddUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Addhwid?hwid=" .. HttpService:UrlEncode(hwid) .. "&key=" .. HttpService:UrlEncode(getgenv().Key) .. "&user=free"
 
--- Kiểm tra Key
+-- Kiểm tra Key từ file GitHub
 local success, keyData = pcall(function()
     return game:HttpGet(keyCheckUrl)
 end)
@@ -35,7 +36,7 @@ end
 
 local currentTime = os.time()
 
--- Kiểm tra key có hợp lệ không
+-- Kiểm tra Key có hợp lệ không
 if not keys[getgenv().Key] then
     game.Players.LocalPlayer:Kick("❌ Key không hợp lệ!")
     return
@@ -68,8 +69,8 @@ if not hwidStatus then
     return
 end
 
--- Nếu HWID chưa tồn tại, gửi HWID và key lên API
 if not hwidStatus.HWID_Status then
+    -- Nếu HWID chưa tồn tại, thêm HWID vào API
     warn("ℹ️ HWID chưa tồn tại, đang thêm vào API...")
 
     local addSuccess, addResponse = pcall(function()
@@ -82,13 +83,14 @@ if not hwidStatus.HWID_Status then
     end
 
     warn("✅ HWID của bạn đã được thêm thành công! Tiếp tục chạy script...")
+
 elseif hwidStatus.HWID_Status ~= hwid then
     -- Nếu HWID không khớp, kick người chơi và thông báo
     game.Players.LocalPlayer:Kick("❌ HWID không khớp với Key!")
     return
 end
 
--- Các script tùy theo game.PlaceId
+-- Chạy script tùy theo game
 local gameScripts = {
     [2753915549] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
     [4442272183] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
@@ -96,7 +98,6 @@ local gameScripts = {
     [116495829188952] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/Npclockdeadrails"
 }
 
--- Kiểm tra nếu có script cho game.PlaceId và chạy
 if gameScripts[game.PlaceId] then
     if game.PlaceId ~= 116495829188952 then
         getgenv().Language = "English"
