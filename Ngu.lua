@@ -8,8 +8,8 @@ end
 local hwid = gethwid and gethwid() or "Unknown"
 
 local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
-local hwidCheckUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Checkhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key
-local hwidAddUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Addhwid?hwid=" .. hwid .. "&key=" .. getgenv().Key .. "&user=free"
+local hwidCheckUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Checkhwid?hwid=" .. httpService:UrlEncode(hwid) .. "&key=" .. httpService:UrlEncode(getgenv().Key)
+local hwidAddUrl = "https://ac756656-2e64-4605-812d-d350905188e3-00-38lyz4e9bv6wh.worf.replit.dev/Addhwid?hwid=" .. httpService:UrlEncode(hwid) .. "&key=" .. httpService:UrlEncode(getgenv().Key) .. "&user=free"
 
 -- Kiểm tra Key
 local success, keyData = pcall(function()
@@ -22,8 +22,6 @@ if not success or not keyData then
 end
 
 local keys
-local httpService = game:GetService("HttpService")
-
 pcall(function()
     keys = httpService:JSONDecode(keyData)
 end)
