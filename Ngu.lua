@@ -25,20 +25,33 @@ if keyData and keyData[key] then
     local hwidResponse = getData(hwidCheckUrl)
     
     if hwidResponse and hwidResponse.status == "true" then
-        print("✅ Key và HWID hợp lệ.")
+        print("✅Success")
         
         -- Chạy script theo game
         local gameScripts = {
-            [2753915549] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
-            [4442272183] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
-            [7449423635] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/VxezeHubMain2",
-            [116495829188952] = "https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/Npclockdeadrails"
+            [2753915549] = function()
+                getgenv().Language = "English"
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+            end,
+            [4442272183] = function()
+                getgenv().Language = "English"
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+            end,
+            [7449423635] = function()
+                getgenv().Language = "English"
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain2"))()
+            end,
+            [116495829188952] = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/main/Npclockdeadrails"))()
+            end
         }
 
-        if gameScripts[game.PlaceId] then
-            loadstring(game:HttpGet(gameScripts[game.PlaceId]))()
+        local scriptFunction = gameScripts[game.PlaceId]
+        
+        if scriptFunction then
+            scriptFunction()
         else
-            game.Players.LocalPlayer:Kick("⚠️ Not Support!")
+            game.Players.LocalPlayer:Kick("⚠️ Game này không được hỗ trợ!")
         end
     else
         game.Players.LocalPlayer:Kick(hwidResponse.message or "⚠️ HWID không hợp lệ.")
