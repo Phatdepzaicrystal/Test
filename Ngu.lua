@@ -5,7 +5,7 @@ local hwid = gethwid and gethwid() or "Unknown"
 local key = getgenv().Key or nil
 
 if not key then
-    game.Players.LocalPlayer:Kick("⚠️ Vui lòng nhập Key.")
+    game.Players.LocalPlayer:Kick("⚠️ You must enter key!.")
     return
 end
 
@@ -51,11 +51,11 @@ if keyData and keyData[key] then
         if scriptFunction then
             scriptFunction()
         else
-            game.Players.LocalPlayer:Kick("⚠️ Game này không được hỗ trợ!")
+            game.Players.LocalPlayer:Kick("⚠️ Not Support !")
         end
     else
-        game.Players.LocalPlayer:Kick(hwidResponse.message or "⚠️ HWID không hợp lệ.")
+        game.Players.LocalPlayer:Kick(hwidResponse.message or "⚠️ Invaild HWID ")
     end
 else
-    game.Players.LocalPlayer:Kick("⚠️ Key không tồn tại trong danh sách GitHub.")
+    game.Players.LocalPlayer:Kick("⚠️ Invaild Key")
 end
