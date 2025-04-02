@@ -10,7 +10,7 @@ if not key then
 end
 
 local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
-local hwidCheckUrl = "https://idk-twi6.onrender.com/Checkhwid?hwid=" .. hwid .. "&key=" .. key
+local hwidCheckUrl = "https://phatcrystal.pythonanywhere.com/Checkhwid?hwid=" .. hwid .. "&key=" .. key
 
 local function getData(url)
     local response = game:HttpGet(url)
