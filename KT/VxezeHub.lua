@@ -13,21 +13,9 @@ local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/ref
 local hwidCheckUrl = "https://phatcrystal.pythonanywhere.com/Checkhwid?hwid=" .. hwid .. "&key=" .. key
 
 local function getData(url)
-    local success, response = pcall(function()
-        return game:HttpGet(url, {["User-Agent"] = "Roblox/Client"})
-    end)
-    if success and response and response ~= "" then
-        local successDecode, data = pcall(function()
-            return HttpService:JSONDecode(response)
-        end)
-        if successDecode then
-            return data
-        else
-            warn("❌ JSON Decode Error: Không thể giải mã phản hồi JSON.")
-            warn("📄 Response:", response)
-        end
-    else
-        warn("❌ HTTP Request Error:", response or "Không thể kết nối tới URL.")
+    local response = game:HttpGet(url)
+    if response and response ~= "" then
+        return HttpService:JSONDecode(response)
     end
     return nil
 end
