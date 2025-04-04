@@ -10,7 +10,7 @@ if not key then
 end
 
 local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/refs/heads/main/keys.json"
-local hwidCheckUrl = "https://apihwid.vercel.app/Checkhwid?hwid=" .. hwid .. "&key=" .. key
+local hwidCheckUrl = "https://apihwid-zwg31apop-phatcrystals-projects.vercel.app/Checkhwid?hwid=" .. hwid .. "&key=" .. key
 
 local function getData(url)
     local response = game:HttpGet(url)
