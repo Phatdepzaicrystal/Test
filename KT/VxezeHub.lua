@@ -14,7 +14,7 @@ local hwidCheckUrl = "https://phatcrystal.pythonanywhere.com/Checkhwid?hwid=" ..
 
 local function getData(url)
     local success, response = pcall(function()
-        return game:HttpGet(url)
+        return game:HttpGet(url, {["User-Agent"] = "Roblox/Client"})
     end)
     if success and response and response ~= "" then
         local successDecode, data = pcall(function()
