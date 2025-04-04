@@ -13,9 +13,20 @@ local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/ref
 local hwidCheckUrl = "https://phatcrystal.pythonanywhere.com/Checkhwid?hwid=" .. hwid .. "&key=" .. key
 
 local function getData(url)
-    local response = game:HttpGet(url)
-    if response and response ~= "" then
-        return HttpService:JSONDecode(response)
+    local success, response = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if success and response and response ~= "" then
+        local successDecode, data = pcall(function()
+            return HttpService:JSONDecode(response)
+        end)
+        if successDecode then
+            return data
+        else
+            warn("JSON Decode Error:", data)
+        end
+    else
+        warn("HTTP Request Error:", response)
     end
     return nil
 end
