@@ -23,11 +23,11 @@ local function getData(url)
         if successDecode then
             return data
         else
-            warn("JSON Decode Error: Response không hợp lệ hoặc không phải định dạng JSON.")
-            warn("Response:", response)
+            warn("❌ JSON Decode Error: Không thể giải mã phản hồi JSON.")
+            warn("📄 Response:", response)
         end
     else
-        warn("HTTP Request Error:", response or "Không thể kết nối tới URL.")
+        warn("❌ HTTP Request Error:", response or "Không thể kết nối tới URL.")
     end
     return nil
 end
