@@ -5,7 +5,7 @@ local hwid = gethwid and gethwid() or "Unknown"
 local key = getgenv().Key or nil
 
 if not key then
-    game.Players.LocalPlayer:Kick("⚠️ You must enter key!.")
+    game.Players.LocalPlayer:Kick("⚠️ You must enter a key!")
     return
 end
 
@@ -13,8 +13,11 @@ local keyCheckUrl = "https://raw.githubusercontent.com/Phatdepzaicrystal/Key/ref
 local hwidCheckUrl = "https://90b5e3ad-055e-4b22-851d-bd511d979dbc-00-3591ow60fhoft.riker.replit.dev/Checkhwid?hwid=" .. hwid .. "&key=" .. key
 
 local function getData(url)
-    local response = game:HttpGet(url)
-    if response and response ~= "" then
+    local success, response = pcall(function()
+        return game:HttpGet(url)
+    end)
+
+    if success and response and response ~= "" then
         return HttpService:JSONDecode(response)
     end
     return nil
@@ -25,8 +28,8 @@ if keyData and keyData[key] then
     local hwidResponse = getData(hwidCheckUrl)
     
     if hwidResponse and hwidResponse.status == "true" then
-        print("✅Success")
-        
+        print("✅ Success - HWID matched")
+
         -- Chạy script theo game
         local gameScripts = {
             [2753915549] = function()
@@ -51,11 +54,11 @@ if keyData and keyData[key] then
         if scriptFunction then
             scriptFunction()
         else
-            game.Players.LocalPlayer:Kick("⚠️ Not Support !")
+            game.Players.LocalPlayer:Kick("⚠️ This game is not supported.")
         end
     else
-        game.Players.LocalPlayer:Kick(hwidResponse.message or "⚠️ Invaild HWID ")
+        game.Players.LocalPlayer:Kick(hwidResponse and hwidResponse.message or "⚠️ Invalid HWID.")
     end
 else
-    game.Players.LocalPlayer:Kick("⚠️ Invaild Key")
+    game.Players.LocalPlayer:Kick("⚠️ Invalid key.")
 end
